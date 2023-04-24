@@ -1,0 +1,2918 @@
+{
+  "namespace": "sap.samples.authorreadings",
+  "definitions": {
+    "sap.samples.authorreadings.AuthorReadings": {
+      "kind": "entity",
+      "@fiori.draft.enabled": true,
+      "includes": [
+        "managed",
+        "cuid"
+      ],
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "ID": {
+          "@title": "{i18n>uuid}",
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "identifier": {
+          "@title": "{i18n>identifier}",
+          "@mandatory": true,
+          "type": "cds.String"
+        },
+        "title": {
+          "@title": "{i18n>title}",
+          "@mandatory": true,
+          "localized": true,
+          "type": "cds.String",
+          "length": 100
+        },
+        "description": {
+          "@title": "{i18n>description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 500
+        },
+        "date": {
+          "@title": "{i18n>date}",
+          "@mandatory": true,
+          "type": "cds.DateTime"
+        },
+        "maxParticipantsNumber": {
+          "@title": "{i18n>maxParticipantsNumber}",
+          "@mandatory": true,
+          "type": "cds.Integer"
+        },
+        "availableFreeSlots": {
+          "@title": "{i18n>availableFreeSlots}",
+          "@readonly": true,
+          "type": "cds.Integer"
+        },
+        "participantsFeeAmount": {
+          "@title": "{i18n>participantsFeeAmount}",
+          "@Measures.ISOCurrency": {
+            "=": "currency_code"
+          },
+          "type": "cds.Decimal",
+          "precision": 6,
+          "scale": 2
+        },
+        "currency": {
+          "@title": "{i18n>currency}",
+          "type": "cds.Association",
+          "cardinality": {
+            "max": 1
+          },
+          "target": "sap.common.Currencies",
+          "keys": [
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "statusCode": {
+          "@title": "{i18n>statusCode}",
+          "@readonly": true,
+          "type": "cds.Association",
+          "cardinality": {
+            "max": 1
+          },
+          "target": "sap.samples.authorreadings.AuthorReadingStatusCodes",
+          "keys": [
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "participants": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.samples.authorreadings.Participants",
+          "on": [
+            {
+              "ref": [
+                "participants",
+                "parent"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        },
+        "projectID": {
+          "@title": "{i18n>projectID}",
+          "type": "cds.String"
+        },
+        "projectObjectID": {
+          "@title": "{i18n>projectObjectID}",
+          "type": "cds.String"
+        },
+        "projectURL": {
+          "@title": "{i18n>projectURL}",
+          "type": "cds.String"
+        },
+        "projectSystem": {
+          "@title": "{i18n>projectSystem}",
+          "type": "cds.String"
+        },
+        "eventMeshMessage": {
+          "@title": "{i18n>eventMeshMessage}",
+          "type": "cds.String"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.samples.authorreadings.AuthorReadings.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "ID"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.samples.authorreadings.AuthorReadings.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "ID"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "ID"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sap.samples.authorreadings.Participants": {
+      "kind": "entity",
+      "includes": [
+        "managed",
+        "cuid"
+      ],
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "ID": {
+          "@title": "{i18n>uuid}",
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "parent": {
+          "@title": "{i18n>authorReadingUUID}",
+          "type": "cds.Association",
+          "target": "sap.samples.authorreadings.AuthorReadings",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "identifier": {
+          "@title": "{i18n>identifier}",
+          "@mandatory": true,
+          "type": "cds.String"
+        },
+        "name": {
+          "@title": "{i18n>name}",
+          "@mandatory": true,
+          "type": "cds.String"
+        },
+        "email": {
+          "@title": "{i18n>email}",
+          "type": "cds.String"
+        },
+        "mobileNumber": {
+          "@title": "{i18n>mobileNumber}",
+          "type": "cds.String"
+        },
+        "statusCode": {
+          "@title": "{i18n>statusCode}",
+          "@readonly": true,
+          "type": "cds.Association",
+          "cardinality": {
+            "max": 1
+          },
+          "target": "sap.samples.authorreadings.ParticipantStatusCodes",
+          "keys": [
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sap.samples.authorreadings.AuthorReadingStatusCodes": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.samples.authorreadings.AuthorReadingStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.samples.authorreadings.AuthorReadingStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sap.samples.authorreadings.ParticipantStatusCodes": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 1
+          }
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.samples.authorreadings.ParticipantStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.samples.authorreadings.ParticipantStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "AuthorReadingManager": {
+      "@source": "srv/service-models.cds",
+      "kind": "service",
+      "@path": "authorreadingmanager",
+      "@impl": "./service-implementation.js",
+      "@requires": [
+        "AuthorReadingManagerRole",
+        "AuthorReadingAdminRole"
+      ]
+    },
+    "AuthorReadingManager.Currencies": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.common.Currencies"
+          ]
+        }
+      },
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "symbol": {
+          "@title": "{i18n>CurrencySymbol}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "AuthorReadingManager.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "AuthorReadingManager.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "AuthorReadingManager.AuthorReadings": {
+      "kind": "entity",
+      "@odata.draft.enabled": true,
+      "@restrict": [
+        {
+          "grant": [
+            "READ",
+            "CREATE"
+          ],
+          "to": "AuthorReadingManagerRole"
+        },
+        {
+          "grant": [
+            "*"
+          ],
+          "to": "AuthorReadingManagerRole",
+          "where": "createdBy = $user",
+          "_where": "[{\"ref\":[\"createdBy\"]},\"=\",{\"ref\":[\"$user\"]}]"
+        },
+        {
+          "grand": [
+            "*"
+          ],
+          "to": "AuthorReadingAdminRole"
+        }
+      ],
+      "@PersonalData.DataSubjectRole": "AuthorReadings",
+      "@PersonalData.EntitySemantics": "DataSubject",
+      "@AuditLog.Operation.Read": true,
+      "@AuditLog.Operation.Insert": true,
+      "@AuditLog.Operation.Update": true,
+      "@AuditLog.Operation.Delete": true,
+      "@UI.SelectionFields": [
+        {
+          "=": "identifier"
+        },
+        {
+          "=": "date"
+        },
+        {
+          "=": "maxParticipantsNumber"
+        },
+        {
+          "=": "availableFreeSlots"
+        },
+        {
+          "=": "statusCode_code"
+        },
+        {
+          "=": "participantsFeeAmount"
+        },
+        {
+          "=": "projectID"
+        },
+        {
+          "=": "projectSystem"
+        }
+      ],
+      "@UI.LineItem": [
+        {
+          "$Type": "UI.DataFieldForAction",
+          "Label": "{i18n>publish}",
+          "Action": "AuthorReadingManager.publish"
+        },
+        {
+          "$Type": "UI.DataFieldForAction",
+          "Label": "{i18n>block}",
+          "Action": "AuthorReadingManager.block"
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "identifier"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "title"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "description"
+          },
+          "@UI.Hidden": true
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "statusCode.descr"
+          },
+          "Criticality": {
+            "=": "statusCriticality"
+          },
+          "Label": "{i18n>statusCriticality}"
+        },
+        {
+          "$Type": "UI.DataFieldWithUrl",
+          "Value": {
+            "=": "projectID"
+          },
+          "Url": {
+            "=": "projectURL"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "projectSystem"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "date"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "participantsFeeAmount"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "availableFreeSlots"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdBy"
+          }
+        }
+      ],
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataFieldForAction",
+          "Label": "{i18n>publish}",
+          "Action": "AuthorReadingManager.publish"
+        },
+        {
+          "$Type": "UI.DataFieldForAction",
+          "Label": "{i18n>block}",
+          "Action": "AuthorReadingManager.block"
+        }
+      ],
+      "@UI.HeaderInfo.$Type": "UI.HeaderInfoType",
+      "@UI.HeaderInfo.TypeName": "{i18n>authorreading}",
+      "@UI.HeaderInfo.TypeNamePlural": "{i18n>authorreading-plural}",
+      "@UI.HeaderInfo.Title.$Type": "UI.DataField",
+      "@UI.HeaderInfo.Title.Value": {
+        "=": "identifier"
+      },
+      "@UI.HeaderInfo.Description.$Type": "UI.DataField",
+      "@UI.HeaderInfo.Description.Value": {
+        "=": "description"
+      },
+      "@UI.HeaderFacets": [
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.DataPoint#Date"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.DataPoint#AvailableFreeSlots"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.DataPoint#ParticipantsFeeAmount"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.DataPoint#Status"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.FieldGroup#Created"
+        }
+      ],
+      "@UI.DataPoint#Date.Title": "{i18n>date}",
+      "@UI.DataPoint#Date.Value": {
+        "=": "date"
+      },
+      "@UI.DataPoint#Date.@UI.Emphasized": true,
+      "@UI.DataPoint#AvailableFreeSlots.Title": "{i18n>availableFreeSlots}",
+      "@UI.DataPoint#AvailableFreeSlots.Value": {
+        "=": "availableFreeSlots"
+      },
+      "@UI.DataPoint#AvailableFreeSlots.@UI.Emphasized": true,
+      "@UI.DataPoint#ParticipantsFeeAmount.Title": "{i18n>participantsFeeAmount}",
+      "@UI.DataPoint#ParticipantsFeeAmount.Value": {
+        "=": "participantsFeeAmount"
+      },
+      "@UI.DataPoint#ParticipantsFeeAmount.@UI.Emphasized": true,
+      "@UI.DataPoint#Status.Title": "{i18n>statusCriticality}",
+      "@UI.DataPoint#Status.Value": {
+        "=": "statusCode.descr"
+      },
+      "@UI.DataPoint#Status.Criticality": {
+        "=": "statusCriticality"
+      },
+      "@UI.DataPoint#Status.@UI.Emphasized": true,
+      "@UI.Facets": [
+        {
+          "$Type": "UI.CollectionFacet",
+          "Label": "{i18n>generalData}",
+          "ID": "GeneralData",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Target": {
+                "=": "@UI.FieldGroup#Values"
+              },
+              "ID": "GeneralData"
+            }
+          ]
+        },
+        {
+          "$Type": "UI.CollectionFacet",
+          "Label": "{i18n>participantData}",
+          "ID": "Participants",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Target": "participants/@UI.LineItem",
+              "ID": "Participants"
+            }
+          ]
+        },
+        {
+          "$Type": "UI.CollectionFacet",
+          "Label": "{i18n>projectData}",
+          "ID": "ProjectData",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Target": {
+                "=": "@UI.FieldGroup#ProjectData"
+              },
+              "ID": "ProjectData"
+            }
+          ]
+        },
+        {
+          "$Type": "UI.CollectionFacet",
+          "Label": "{i18n>administativeData}",
+          "ID": "AdministrativeData",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Target": {
+                "=": "@UI.FieldGroup#AdminData"
+              },
+              "ID": "AdministrativeData"
+            }
+          ]
+        }
+      ],
+      "@UI.FieldGroup#Values.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "identifier"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "statusCode.descr"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "title"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "description"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "date"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "maxParticipantsNumber"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "availableFreeSlots"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "participantsFeeAmount"
+          }
+        },
+        {
+          "$Type": "UI.DataFieldWithUrl",
+          "Value": {
+            "=": "projectID"
+          },
+          "Url": {
+            "=": "projectURL"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "projectSystem"
+          }
+        }
+      ],
+      "@UI.FieldGroup#ProjectData.Data": [
+        {
+          "$Type": "UI.DataFieldWithUrl",
+          "Value": {
+            "=": "projectID"
+          },
+          "Url": {
+            "=": "projectURL"
+          },
+          "@UI.Hidden": false
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "projectSystem"
+          },
+          "@UI.Hidden": false
+        }
+      ],
+      "@UI.FieldGroup#AdminData.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdBy"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdAt"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "modifiedBy"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "modifiedAt"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "eventMeshMessage"
+          }
+        }
+      ],
+      "@UI.FieldGroup#Created.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdBy"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdAt"
+          }
+        }
+      ],
+      "@fiori.draft.enabled": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "sap.samples.authorreadings.AuthorReadings"
+            ]
+          },
+          "columns": [
+            "*",
+            {
+              "virtual": true,
+              "val": null,
+              "as": "statusCriticality",
+              "cast": {
+                "type": "cds.Integer"
+              }
+            },
+            {
+              "virtual": true,
+              "val": null,
+              "as": "createProjectEnabled",
+              "cast": {
+                "type": "cds.Boolean"
+              }
+            }
+          ]
+        }
+      },
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "ID": {
+          "@PersonalData.FieldSemantics": "DataSubjectID",
+          "@title": "{i18n>uuid}",
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "identifier": {
+          "@PersonalData.FieldSemantics": "DataSubjectID",
+          "@title": "{i18n>identifier}",
+          "@mandatory": true,
+          "type": "cds.String"
+        },
+        "title": {
+          "@title": "{i18n>title}",
+          "@mandatory": true,
+          "localized": true,
+          "type": "cds.String",
+          "length": 100
+        },
+        "description": {
+          "@PersonalData.FieldSemantics": "DataSubjectID",
+          "@title": "{i18n>description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 500
+        },
+        "date": {
+          "@title": "{i18n>date}",
+          "@mandatory": true,
+          "type": "cds.DateTime"
+        },
+        "maxParticipantsNumber": {
+          "@title": "{i18n>maxParticipantsNumber}",
+          "@mandatory": true,
+          "type": "cds.Integer"
+        },
+        "availableFreeSlots": {
+          "@title": "{i18n>availableFreeSlots}",
+          "@readonly": true,
+          "type": "cds.Integer"
+        },
+        "participantsFeeAmount": {
+          "@PersonalData.IsPotentiallySensitive": true,
+          "@title": "{i18n>participantsFeeAmount}",
+          "@Measures.ISOCurrency": {
+            "=": "currency_code"
+          },
+          "type": "cds.Decimal",
+          "precision": 6,
+          "scale": 2
+        },
+        "currency": {
+          "@title": "{i18n>currency}",
+          "type": "cds.Association",
+          "cardinality": {
+            "max": 1
+          },
+          "target": "AuthorReadingManager.Currencies",
+          "keys": [
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "statusCode": {
+          "@title": "{i18n>statusCode}",
+          "@readonly": true,
+          "type": "cds.Association",
+          "cardinality": {
+            "max": 1
+          },
+          "target": "AuthorReadingManager.AuthorReadingStatusCodes",
+          "keys": [
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "participants": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "AuthorReadingManager.Participants",
+          "on": [
+            {
+              "ref": [
+                "participants",
+                "parent"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        },
+        "projectID": {
+          "@title": "{i18n>projectID}",
+          "type": "cds.String"
+        },
+        "projectObjectID": {
+          "@title": "{i18n>projectObjectID}",
+          "type": "cds.String"
+        },
+        "projectURL": {
+          "@title": "{i18n>projectURL}",
+          "type": "cds.String"
+        },
+        "projectSystem": {
+          "@title": "{i18n>projectSystem}",
+          "type": "cds.String"
+        },
+        "eventMeshMessage": {
+          "@title": "{i18n>eventMeshMessage}",
+          "type": "cds.String"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "AuthorReadingManager.AuthorReadings.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "ID"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "AuthorReadingManager.AuthorReadings.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "ID"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "ID"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        },
+        "statusCriticality": {
+          "@title": "{i18n>statusCriticality}",
+          "@Core.Computed": true,
+          "virtual": true,
+          "type": "cds.Integer"
+        },
+        "createProjectEnabled": {
+          "@title": "{i18n>createProjectEnabled}",
+          "@odata.Type": "Edm.Boolean",
+          "@Core.Computed": true,
+          "virtual": true,
+          "type": "cds.Boolean"
+        }
+      },
+      "actions": {
+        "block": {
+          "kind": "action",
+          "@Common.SideEffects.TargetEntities": [
+            "_authorreading"
+          ],
+          "@cds.odata.bindingparameter.name": "_authorreading",
+          "returns": {
+            "type": "AuthorReadingManager.AuthorReadings"
+          }
+        },
+        "publish": {
+          "kind": "action",
+          "@Common.SideEffects.TargetEntities": [
+            "_authorreading"
+          ],
+          "@cds.odata.bindingparameter.name": "_authorreading",
+          "returns": {
+            "type": "AuthorReadingManager.AuthorReadings"
+          }
+        }
+      }
+    },
+    "AuthorReadingManager.Participants": {
+      "kind": "entity",
+      "@restrict": [
+        {
+          "grant": [
+            "READ",
+            "CREATE"
+          ],
+          "to": "AuthorReadingManagerRole"
+        },
+        {
+          "grant": [
+            "*"
+          ],
+          "to": "AuthorReadingManagerRole",
+          "where": "createdBy = $user",
+          "_where": "[{\"ref\":[\"createdBy\"]},\"=\",{\"ref\":[\"$user\"]}]"
+        },
+        {
+          "grand": [
+            "*"
+          ],
+          "to": "AuthorReadingAdminRole"
+        }
+      ],
+      "@PersonalData.DataSubjectRole": "AuthorReadings",
+      "@PersonalData.EntitySemantics": "DataSubjectDetails",
+      "@AuditLog.Operation.Read": true,
+      "@AuditLog.Operation.Insert": true,
+      "@AuditLog.Operation.Update": true,
+      "@AuditLog.Operation.Delete": true,
+      "@UI.SelectionFields": [
+        {
+          "=": "identifier"
+        },
+        {
+          "=": "email"
+        },
+        {
+          "=": "mobileNumber"
+        },
+        {
+          "=": "statusCode_code"
+        }
+      ],
+      "@UI.LineItem": [
+        {
+          "$Type": "UI.DataFieldForAction",
+          "Label": "{i18n>confirmParticipation}",
+          "Action": "AuthorReadingManager.confirmParticipation"
+        },
+        {
+          "$Type": "UI.DataFieldForAction",
+          "Label": "{i18n>cancelParticipation}",
+          "Action": "AuthorReadingManager.cancelParticipation"
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "identifier"
+          },
+          "@UI.Importance": {
+            "#": "High"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          },
+          "@UI.Importance": {
+            "#": "High"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "email"
+          },
+          "@UI.Importance": {
+            "#": "High"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "mobileNumber"
+          },
+          "@UI.Importance": {
+            "#": "High"
+          }
+        },
+        {
+          "Value": {
+            "=": "statusCode_code"
+          },
+          "@UI.Hidden": true
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>statusCriticality}",
+          "Value": {
+            "=": "statusCode.descr"
+          },
+          "Criticality": {
+            "=": "statusCriticality"
+          }
+        }
+      ],
+      "@UI.HeaderInfo.$Type": "UI.HeaderInfoType",
+      "@UI.HeaderInfo.TypeName": "{i18n>participant}",
+      "@UI.HeaderInfo.TypeNamePlural": "{i18n>participant-plural}",
+      "@UI.HeaderInfo.Title.$Type": "UI.DataField",
+      "@UI.HeaderInfo.Title.Value": {
+        "=": "identifier"
+      },
+      "@UI.HeaderInfo.Description.$Type": "UI.DataField",
+      "@UI.HeaderInfo.Description.Value": {
+        "=": "name"
+      },
+      "@UI.HeaderFacets": [
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.DataPoint#ParticipantStatus"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Target": "@UI.FieldGroup#Created"
+        }
+      ],
+      "@UI.DataPoint#ParticipantStatus.Title": "{i18n>codeListStatusText}",
+      "@UI.DataPoint#ParticipantStatus.Value": {
+        "=": "statusCode.descr"
+      },
+      "@UI.DataPoint#ParticipantStatus.Criticality": {
+        "=": "statusCriticality"
+      },
+      "@UI.DataPoint#ParticipantStatus.@UI.Emphasized": true,
+      "@UI.Facets": [
+        {
+          "$Type": "UI.CollectionFacet",
+          "Label": "{i18n>generalData}",
+          "ID": "GeneralData",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Target": {
+                "=": "@UI.FieldGroup#ParticipantDetails"
+              },
+              "ID": "GeneralData"
+            }
+          ]
+        },
+        {
+          "$Type": "UI.CollectionFacet",
+          "Label": "{i18n>administativeData}",
+          "ID": "AdministrativeData",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Target": {
+                "=": "@UI.FieldGroup#AdminData"
+              },
+              "ID": "AdministrativeData"
+            }
+          ]
+        }
+      ],
+      "@UI.FieldGroup#ParticipantDetails.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "identifier"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "email"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "mobileNumber"
+          }
+        }
+      ],
+      "@UI.FieldGroup#AdminData.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdBy"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdAt"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "modifiedBy"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "modifiedAt"
+          }
+        }
+      ],
+      "@UI.FieldGroup#Created.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "createdAt"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "modifiedAt"
+          }
+        }
+      ],
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.samples.authorreadings.Participants"
+          ]
+        },
+        "columns": [
+          "*",
+          {
+            "virtual": true,
+            "val": null,
+            "as": "statusCriticality",
+            "cast": {
+              "type": "cds.Integer"
+            }
+          }
+        ]
+      },
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "ID": {
+          "@PersonalData.FieldSemantics": "DataSubjectID",
+          "@title": "{i18n>uuid}",
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "parent": {
+          "@PersonalData.FieldSemantics": "DataSubjectID",
+          "@title": "{i18n>authorReadingUUID}",
+          "type": "cds.Association",
+          "target": "AuthorReadingManager.AuthorReadings",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "identifier": {
+          "@PersonalData.FieldSemantics": "DataSubjectID",
+          "@title": "{i18n>identifier}",
+          "@mandatory": true,
+          "type": "cds.String"
+        },
+        "name": {
+          "@PersonalData.IsPotentiallyPersonal": true,
+          "@title": "{i18n>name}",
+          "@mandatory": true,
+          "type": "cds.String"
+        },
+        "email": {
+          "@PersonalData.IsPotentiallySensitive": true,
+          "@title": "{i18n>email}",
+          "type": "cds.String"
+        },
+        "mobileNumber": {
+          "@PersonalData.IsPotentiallySensitive": true,
+          "@title": "{i18n>mobileNumber}",
+          "type": "cds.String"
+        },
+        "statusCode": {
+          "@title": "{i18n>statusCode}",
+          "@readonly": true,
+          "type": "cds.Association",
+          "cardinality": {
+            "max": 1
+          },
+          "target": "AuthorReadingManager.ParticipantStatusCodes",
+          "keys": [
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "statusCriticality": {
+          "@title": "{i18n>statusCriticality}",
+          "@Core.Computed": true,
+          "virtual": true,
+          "type": "cds.Integer"
+        }
+      },
+      "actions": {
+        "cancelParticipation": {
+          "kind": "action",
+          "@Common.SideEffects.TargetEntities": [
+            "_participant",
+            "_participant/parent"
+          ],
+          "@cds.odata.bindingparameter.name": "_participant",
+          "returns": {
+            "type": "AuthorReadingManager.Participants"
+          }
+        },
+        "confirmParticipation": {
+          "kind": "action",
+          "@Common.SideEffects.TargetEntities": [
+            "_participant",
+            "_participant/parent"
+          ],
+          "@cds.odata.bindingparameter.name": "_participant",
+          "returns": {
+            "type": "AuthorReadingManager.Participants"
+          }
+        }
+      }
+    },
+    "AuthorReadingManager.userRoles": {
+      "kind": "type",
+      "elements": {
+        "identified": {
+          "type": "cds.Boolean"
+        },
+        "authenticated": {
+          "type": "cds.Boolean"
+        }
+      }
+    },
+    "AuthorReadingManager.user": {
+      "kind": "type",
+      "elements": {
+        "user": {
+          "type": "cds.String"
+        },
+        "locale": {
+          "type": "cds.String"
+        },
+        "roles": {
+          "type": "AuthorReadingManager.userRoles"
+        }
+      }
+    },
+    "AuthorReadingManager.userInfo": {
+      "kind": "function",
+      "returns": {
+        "type": "AuthorReadingManager.user"
+      }
+    },
+    "Language": {
+      "kind": "type",
+      "@title": "{i18n>Language}",
+      "@description": "{i18n>LanguageCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Languages",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "Currency": {
+      "kind": "type",
+      "@title": "{i18n>Currency}",
+      "@description": "{i18n>CurrencyCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Currencies",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "Country": {
+      "kind": "type",
+      "@title": "{i18n>Country}",
+      "@description": "{i18n>CountryCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Countries",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "sap.common": {
+      "kind": "context"
+    },
+    "sap.common.Locale": {
+      "kind": "type",
+      "@title": "{i18n>LanguageCode}",
+      "type": "cds.String",
+      "length": 14
+    },
+    "sap.common.Languages": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "name"
+          },
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Languages.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Languages.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sap.common.Countries": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@title": "{i18n>CountryCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Countries.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Countries.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sap.common.Currencies": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "symbol": {
+          "@title": "{i18n>CurrencySymbol}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sap.common.CodeList": {
+      "kind": "aspect",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        }
+      }
+    },
+    "sap.common.TextsAspect": {
+      "kind": "aspect",
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        }
+      }
+    },
+    "cuid": {
+      "kind": "aspect",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        }
+      }
+    },
+    "managed": {
+      "kind": "aspect",
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        }
+      }
+    },
+    "temporal": {
+      "kind": "aspect",
+      "elements": {
+        "validFrom": {
+          "@cds.valid.from": true,
+          "type": "cds.Timestamp"
+        },
+        "validTo": {
+          "@cds.valid.to": true,
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "User": {
+      "kind": "type",
+      "@title": "{i18n>UserID}",
+      "@description": "{i18n>UserID.Description}",
+      "type": "cds.String",
+      "length": 255
+    },
+    "extensible": {
+      "kind": "aspect",
+      "elements": {
+        "extensions__": {
+          "@cds.api.ignore": true,
+          "type": "cds.String"
+        }
+      }
+    },
+    "sap.samples.authorreadings.AuthorReadings.texts": {
+      "kind": "entity",
+      "@assert.unique.locale": [
+        {
+          "=": "locale"
+        },
+        {
+          "=": "ID"
+        }
+      ],
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "ID_texts": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "ID": {
+          "@title": "{i18n>uuid}",
+          "@Core.Computed": true,
+          "type": "cds.UUID"
+        },
+        "title": {
+          "@title": "{i18n>title}",
+          "@mandatory": true,
+          "localized": null,
+          "type": "cds.String",
+          "length": 100
+        },
+        "description": {
+          "@title": "{i18n>description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 500
+        }
+      }
+    },
+    "sap.samples.authorreadings.AuthorReadingStatusCodes.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        }
+      }
+    },
+    "sap.samples.authorreadings.ParticipantStatusCodes.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 1
+          }
+        }
+      }
+    },
+    "sap.common.Languages.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "name"
+          },
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        }
+      }
+    },
+    "sap.common.Countries.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CountryCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        }
+      }
+    },
+    "sap.common.Currencies.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        }
+      }
+    },
+    "AuthorReadingManager.Currencies.texts": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "@odata.draft.enabled": false,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.common.Currencies.texts"
+          ]
+        }
+      },
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        }
+      }
+    },
+    "AuthorReadingManager.AuthorReadingStatusCodes": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.samples.authorreadings.AuthorReadingStatusCodes"
+          ]
+        }
+      },
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "AuthorReadingManager.AuthorReadingStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "AuthorReadingManager.AuthorReadingStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "AuthorReadingManager.AuthorReadings.texts": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "@assert.unique.locale": [
+        {
+          "=": "locale"
+        },
+        {
+          "=": "ID"
+        }
+      ],
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.samples.authorreadings.AuthorReadings.texts"
+          ]
+        }
+      },
+      "elements": {
+        "ID_texts": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "ID": {
+          "@title": "{i18n>uuid}",
+          "@Core.Computed": true,
+          "type": "cds.UUID"
+        },
+        "title": {
+          "@title": "{i18n>title}",
+          "@mandatory": true,
+          "localized": null,
+          "type": "cds.String",
+          "length": 100
+        },
+        "description": {
+          "@title": "{i18n>description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 500
+        }
+      }
+    },
+    "AuthorReadingManager.ParticipantStatusCodes": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.samples.authorreadings.ParticipantStatusCodes"
+          ]
+        }
+      },
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 1
+          }
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "AuthorReadingManager.ParticipantStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "AuthorReadingManager.ParticipantStatusCodes.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "AuthorReadingManager.AuthorReadingStatusCodes.texts": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "@odata.draft.enabled": false,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.samples.authorreadings.AuthorReadingStatusCodes.texts"
+          ]
+        }
+      },
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        }
+      }
+    },
+    "AuthorReadingManager.ParticipantStatusCodes.texts": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "@odata.draft.enabled": false,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.samples.authorreadings.ParticipantStatusCodes.texts"
+          ]
+        }
+      },
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>codeListStatusText}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "descr"
+          },
+          "@Common.Text.@UI.TextArrangement": {
+            "#": "TextOnly"
+          },
+          "@title": "{i18n>codeListStatusCode}",
+          "key": true,
+          "type": "cds.Integer",
+          "default": {
+            "val": 1
+          }
+        }
+      }
+    }
+  },
+  "extensions": [
+    {
+      "annotate": "AuthorReadingManager.ByDProjects",
+      "@restrict": [
+        {
+          "grant": [
+            "*"
+          ],
+          "to": "AuthorReadingManagerRole"
+        },
+        {
+          "grand": [
+            "*"
+          ],
+          "to": "AuthorReadingAdminRole"
+        }
+      ]
+    },
+    {
+      "annotate": "AuthorReadingManager.ByDProjectsTechUser",
+      "@restrict": [
+        {
+          "grant": [
+            "*"
+          ],
+          "to": "AuthorReadingManagerRole"
+        },
+        {
+          "grand": [
+            "*"
+          ],
+          "to": "AuthorReadingAdminRole"
+        }
+      ]
+    },
+    {
+      "annotate": "AuthorReadingManager.ByDProjectSummaryTasks",
+      "@restrict": [
+        {
+          "grant": [
+            "*"
+          ],
+          "to": "AuthorReadingManagerRole"
+        },
+        {
+          "grand": [
+            "*"
+          ],
+          "to": "AuthorReadingAdminRole"
+        }
+      ]
+    },
+    {
+      "annotate": "AuthorReadingManager.ByDProjectTasks",
+      "@restrict": [
+        {
+          "grant": [
+            "*"
+          ],
+          "to": "AuthorReadingManagerRole"
+        },
+        {
+          "grand": [
+            "*"
+          ],
+          "to": "AuthorReadingAdminRole"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "creator": "CDS Compiler v3.8.2",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}

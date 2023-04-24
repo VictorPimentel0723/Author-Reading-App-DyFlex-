@@ -1,0 +1,28 @@
+VIEW localized_sap_samples_authorreadings_AuthorReadings AS SELECT
+  L_0.createdAt,
+  L_0.createdBy,
+  L_0.modifiedAt,
+  L_0.modifiedBy,
+  L_0.ID,
+  L_0.identifier,
+  coalesce(localized_1.title, L_0.title) AS title,
+  coalesce(localized_1.description, L_0.description) AS description,
+  L_0."DATE",
+  L_0.maxParticipantsNumber,
+  L_0.availableFreeSlots,
+  L_0.participantsFeeAmount,
+  L_0.currency_code,
+  L_0.statusCode_code,
+  L_0.projectID,
+  L_0.projectObjectID,
+  L_0.projectURL,
+  L_0.projectSystem,
+  L_0.eventMeshMessage
+FROM (sap_samples_authorreadings_AuthorReadings AS L_0 LEFT JOIN sap_samples_authorreadings_AuthorReadings_texts AS localized_1 ON localized_1.ID = L_0.ID AND localized_1.locale = SESSION_CONTEXT('LOCALE'))
+WITH ASSOCIATIONS (
+  MANY TO ONE JOIN localized_sap_common_Currencies AS currency ON (currency.code = currency_code),
+  MANY TO ONE JOIN localized_sap_samples_authorreadings_AuthorReadingStatusCodes AS statusCode ON (statusCode.code = statusCode_code),
+  MANY TO MANY JOIN localized_sap_samples_authorreadings_Participants AS participants ON (participants.parent_ID = ID),
+  MANY TO MANY JOIN sap_samples_authorreadings_AuthorReadings_texts AS texts ON (texts.ID = ID),
+  MANY TO ONE JOIN sap_samples_authorreadings_AuthorReadings_texts AS localized ON (localized.ID = ID AND localized.locale = SESSION_CONTEXT('LOCALE'))
+)

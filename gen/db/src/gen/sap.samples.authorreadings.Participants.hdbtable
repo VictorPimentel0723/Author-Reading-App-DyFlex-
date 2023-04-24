@@ -1,0 +1,17 @@
+COLUMN TABLE sap_samples_authorreadings_Participants (
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  modifiedAt TIMESTAMP,
+  modifiedBy NVARCHAR(255),
+  ID NVARCHAR(36) NOT NULL,
+  parent_ID NVARCHAR(36),
+  identifier NVARCHAR(5000),
+  name NVARCHAR(5000),
+  email NVARCHAR(5000),
+  mobileNumber NVARCHAR(5000),
+  statusCode_code INTEGER DEFAULT 1,
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN sap_samples_authorreadings_AuthorReadings AS parent ON (parent.ID = parent_ID),
+  MANY TO ONE JOIN sap_samples_authorreadings_ParticipantStatusCodes AS statusCode ON (statusCode.code = statusCode_code)
+)

@@ -1,0 +1,1 @@
+UNIQUE INVERTED INDEX sap_samples_authorreadings_AuthorReadings_texts_locale ON sap_samples_authorreadings_AuthorReadings_texts (locale, ID)

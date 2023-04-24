@@ -1,0 +1,28 @@
+VIEW localized_AuthorReadingManager_AuthorReadings AS SELECT
+  AuthorReadings_0.createdAt,
+  AuthorReadings_0.createdBy,
+  AuthorReadings_0.modifiedAt,
+  AuthorReadings_0.modifiedBy,
+  AuthorReadings_0.ID,
+  AuthorReadings_0.identifier,
+  AuthorReadings_0.title,
+  AuthorReadings_0.description,
+  AuthorReadings_0."DATE",
+  AuthorReadings_0.maxParticipantsNumber,
+  AuthorReadings_0.availableFreeSlots,
+  AuthorReadings_0.participantsFeeAmount,
+  AuthorReadings_0.currency_code,
+  AuthorReadings_0.statusCode_code,
+  AuthorReadings_0.projectID,
+  AuthorReadings_0.projectObjectID,
+  AuthorReadings_0.projectURL,
+  AuthorReadings_0.projectSystem,
+  AuthorReadings_0.eventMeshMessage
+FROM localized_sap_samples_authorreadings_AuthorReadings AS AuthorReadings_0
+WITH ASSOCIATIONS (
+  MANY TO ONE JOIN localized_AuthorReadingManager_Currencies AS currency ON (currency.code = currency_code),
+  MANY TO ONE JOIN localized_AuthorReadingManager_AuthorReadingStatusCodes AS statusCode ON (statusCode.code = statusCode_code),
+  MANY TO MANY JOIN localized_AuthorReadingManager_Participants AS participants ON (participants.parent_ID = ID),
+  MANY TO MANY JOIN AuthorReadingManager_AuthorReadings_texts AS texts ON (texts.ID = ID),
+  MANY TO ONE JOIN AuthorReadingManager_AuthorReadings_texts AS localized ON (localized.ID = ID AND localized.locale = SESSION_CONTEXT('LOCALE'))
+)

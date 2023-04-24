@@ -1,0 +1,8 @@
+COLUMN TABLE sap_samples_authorreadings_AuthorReadings_texts (
+  ID_texts NVARCHAR(36) NOT NULL,
+  locale NVARCHAR(14),
+  ID NVARCHAR(36),
+  title NVARCHAR(100),
+  description NVARCHAR(500),
+  PRIMARY KEY(ID_texts)
+)

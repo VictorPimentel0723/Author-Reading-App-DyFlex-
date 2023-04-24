@@ -1,0 +1,33 @@
+COLUMN TABLE AuthorReadingManager_AuthorReadings_drafts (
+  createdAt TIMESTAMP NULL,
+  createdBy NVARCHAR(255) NULL,
+  modifiedAt TIMESTAMP NULL,
+  modifiedBy NVARCHAR(255) NULL,
+  ID NVARCHAR(36) NOT NULL,
+  identifier NVARCHAR(5000) NULL,
+  title NVARCHAR(100) NULL,
+  description NVARCHAR(500) NULL,
+  "DATE" SECONDDATE NULL,
+  maxParticipantsNumber INTEGER NULL,
+  availableFreeSlots INTEGER NULL,
+  participantsFeeAmount DECIMAL(6, 2) NULL,
+  currency_code NVARCHAR(3) NULL,
+  statusCode_code INTEGER NULL DEFAULT 0,
+  projectID NVARCHAR(5000) NULL,
+  projectObjectID NVARCHAR(5000) NULL,
+  projectURL NVARCHAR(5000) NULL,
+  projectSystem NVARCHAR(5000) NULL,
+  eventMeshMessage NVARCHAR(5000) NULL,
+  IsActiveEntity BOOLEAN,
+  HasActiveEntity BOOLEAN,
+  HasDraftEntity BOOLEAN,
+  DraftAdministrativeData_DraftUUID NVARCHAR(36) NOT NULL,
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN AuthorReadingManager_Currencies AS currency ON (currency.code = currency_code),
+  MANY TO ONE JOIN AuthorReadingManager_AuthorReadingStatusCodes AS statusCode ON (statusCode.code = statusCode_code),
+  MANY TO MANY JOIN AuthorReadingManager_Participants_drafts AS participants ON (participants.parent_ID = ID),
+  MANY TO MANY JOIN AuthorReadingManager_AuthorReadings_texts_drafts AS texts ON (texts.ID = ID),
+  MANY TO ONE JOIN AuthorReadingManager_AuthorReadings_texts_drafts AS localized ON (localized.ID = ID AND localized.locale = SESSION_CONTEXT('LOCALE')),
+  MANY TO ONE JOIN AuthorReadingManager_DraftAdministrativeData AS DraftAdministrativeData ON (DraftAdministrativeData.DraftUUID = DraftAdministrativeData_DraftUUID)
+)

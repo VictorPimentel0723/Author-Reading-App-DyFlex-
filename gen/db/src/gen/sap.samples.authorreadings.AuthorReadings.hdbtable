@@ -1,0 +1,28 @@
+COLUMN TABLE sap_samples_authorreadings_AuthorReadings (
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  modifiedAt TIMESTAMP,
+  modifiedBy NVARCHAR(255),
+  ID NVARCHAR(36) NOT NULL,
+  identifier NVARCHAR(5000),
+  title NVARCHAR(100),
+  description NVARCHAR(500),
+  "DATE" SECONDDATE,
+  maxParticipantsNumber INTEGER,
+  availableFreeSlots INTEGER,
+  participantsFeeAmount DECIMAL(6, 2),
+  currency_code NVARCHAR(3),
+  statusCode_code INTEGER DEFAULT 0,
+  projectID NVARCHAR(5000),
+  projectObjectID NVARCHAR(5000),
+  projectURL NVARCHAR(5000),
+  projectSystem NVARCHAR(5000),
+  eventMeshMessage NVARCHAR(5000),
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN sap_common_Currencies AS currency ON (currency.code = currency_code),
+  MANY TO ONE JOIN sap_samples_authorreadings_AuthorReadingStatusCodes AS statusCode ON (statusCode.code = statusCode_code),
+  MANY TO MANY JOIN sap_samples_authorreadings_Participants AS participants ON (participants.parent_ID = ID),
+  MANY TO MANY JOIN sap_samples_authorreadings_AuthorReadings_texts AS texts ON (texts.ID = ID),
+  MANY TO ONE JOIN sap_samples_authorreadings_AuthorReadings_texts AS localized ON (localized.ID = ID AND localized.locale = SESSION_CONTEXT('LOCALE'))
+)

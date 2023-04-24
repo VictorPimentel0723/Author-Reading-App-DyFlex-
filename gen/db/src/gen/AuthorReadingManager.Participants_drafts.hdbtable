@@ -1,0 +1,22 @@
+COLUMN TABLE AuthorReadingManager_Participants_drafts (
+  createdAt TIMESTAMP NULL,
+  createdBy NVARCHAR(255) NULL,
+  modifiedAt TIMESTAMP NULL,
+  modifiedBy NVARCHAR(255) NULL,
+  ID NVARCHAR(36) NOT NULL,
+  parent_ID NVARCHAR(36) NULL,
+  identifier NVARCHAR(5000) NULL,
+  name NVARCHAR(5000) NULL,
+  email NVARCHAR(5000) NULL,
+  mobileNumber NVARCHAR(5000) NULL,
+  statusCode_code INTEGER NULL DEFAULT 1,
+  IsActiveEntity BOOLEAN,
+  HasActiveEntity BOOLEAN,
+  HasDraftEntity BOOLEAN,
+  DraftAdministrativeData_DraftUUID NVARCHAR(36) NOT NULL,
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN AuthorReadingManager_AuthorReadings_drafts AS parent ON (parent.ID = parent_ID),
+  MANY TO ONE JOIN AuthorReadingManager_ParticipantStatusCodes AS statusCode ON (statusCode.code = statusCode_code),
+  MANY TO ONE JOIN AuthorReadingManager_DraftAdministrativeData AS DraftAdministrativeData ON (DraftAdministrativeData.DraftUUID = DraftAdministrativeData_DraftUUID)
+)

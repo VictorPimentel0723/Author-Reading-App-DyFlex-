@@ -1,0 +1,7 @@
+VIEW AuthorReadingManager_AuthorReadings_texts AS SELECT
+  texts_0.ID_texts,
+  texts_0.locale,
+  texts_0.ID,
+  texts_0.title,
+  texts_0.description
+FROM sap_samples_authorreadings_AuthorReadings_texts AS texts_0

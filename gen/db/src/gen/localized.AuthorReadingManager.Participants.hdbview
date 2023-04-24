@@ -1,0 +1,17 @@
+VIEW localized_AuthorReadingManager_Participants AS SELECT
+  Participants_0.createdAt,
+  Participants_0.createdBy,
+  Participants_0.modifiedAt,
+  Participants_0.modifiedBy,
+  Participants_0.ID,
+  Participants_0.parent_ID,
+  Participants_0.identifier,
+  Participants_0.name,
+  Participants_0.email,
+  Participants_0.mobileNumber,
+  Participants_0.statusCode_code
+FROM localized_sap_samples_authorreadings_Participants AS Participants_0
+WITH ASSOCIATIONS (
+  MANY TO ONE JOIN localized_AuthorReadingManager_AuthorReadings AS parent ON (parent.ID = parent_ID),
+  MANY TO ONE JOIN localized_AuthorReadingManager_ParticipantStatusCodes AS statusCode ON (statusCode.code = statusCode_code)
+)
